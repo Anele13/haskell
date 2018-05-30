@@ -12,12 +12,16 @@ type Bebida = TipoCliente-> TipoCliente
 type Accion = Bebida
 
 
-rodri = Cliente "rodri" 55 [] [tomar_tintico]
-marcos = Cliente "marcos" 40 [rodri] [(tomar_klusener "guinda")]
-cristian = Cliente "cristian" 2 [] [tomar_grogXd, tomar_jarraLoca]
-ana = Cliente "ana" 120 [marcos, rodri] [tomar_jarraLoca]
+rodri = Cliente "rodri" 55 [] [tintico]
+marcos = Cliente "marcos" 40 [rodri] [(klusener "guinda")]
+cristian = Cliente "cristian" 2 [] [grogXd, jarraLoca]
+ana = Cliente "ana" 120 [marcos, rodri] [jarraLoca]
 
---instance Show (a->b) where  show tomar_tintico = "Tintico"
+--instance Show (x->b) where
+ --   show grogXd = "GrogXD"
+    --show (jarraLoca) = show "Jarra Loca"
+
+--instance Show (a->b) where  show tintico = "Tintico"
 
 
 
@@ -41,20 +45,20 @@ sumar valor _ = valor + 5
 
 -- TRAGOS
 
-tomar_grogXd:: TipoCliente -> TipoCliente
-tomar_grogXd cliente = cliente {resistencia = 0}
+grogXd:: TipoCliente -> TipoCliente
+grogXd cliente = cliente {resistencia = 0}
 
-tomar_jarraLoca:: TipoCliente -> TipoCliente
-tomar_jarraLoca cliente = bajarresistencia 10 cliente {amigos = map (bajarresistencia 10) (amigos cliente)}
+jarraLoca:: TipoCliente -> TipoCliente
+jarraLoca cliente = bajarresistencia 10 cliente {amigos = map (bajarresistencia 10) (amigos cliente)}
 
-tomar_klusener:: String ->TipoCliente -> TipoCliente
-tomar_klusener sabor cliente = bajarresistencia (length sabor) cliente
+klusener:: String ->TipoCliente -> TipoCliente
+klusener sabor cliente = bajarresistencia (length sabor) cliente
 
-tomar_tintico:: TipoCliente -> TipoCliente
-tomar_tintico cliente = cliente{resistencia= (resistencia cliente) + foldl sumar 0 (amigos cliente)}
+tintico:: TipoCliente -> TipoCliente
+tintico cliente = cliente{resistencia= (resistencia cliente) + foldl sumar 0 (amigos cliente)}
 
-tomar_soda:: Int -> TipoCliente -> TipoCliente
-tomar_soda fuerza cliente = cliente{nombre=  "e"++ (take fuerza (cycle "r"))++"p"++(nombre cliente)}
+soda:: Int -> TipoCliente -> TipoCliente
+soda fuerza cliente = cliente{nombre=  "e"++ (take fuerza (cycle "r"))++"p"++(nombre cliente)}
 
 
 
@@ -81,7 +85,7 @@ beber f cliente  = (f cliente){bebidas= (bebidas cliente)++[f]}
 
 --tomar tragos
 tomarTragos:: [Bebida] -> TipoCliente -> TipoCliente
-tomarTragos lista_tragos cliente = foldr beber cliente lista_tragos
+tomarTragos lista_tragos cliente = foldr beber cliente (reverse (lista_tragos))
 
 -- dame otro trago
 dameOtro:: TipoCliente -> TipoCliente
@@ -113,9 +117,12 @@ data TipoItinerario = Itinerario{nombre_itinerario :: String, duracion_estimada 
 
 robertoCarlos = Cliente "Roberto Carlos" 165 [] []
 
-mezclaExplosiva = Itinerario{nombre_itinerario="Mezcla Explosiva",duracion_estimada= 2.5, acciones = [beber tomar_grogXd,beber tomar_grogXd, beber (tomar_klusener "huevo"), beber (tomar_klusener "frutilla")]}
-itinerarioBasico = Itinerario{nombre_itinerario="Basico",duracion_estimada= 5, acciones = [beber tomar_jarraLoca, beber (tomar_klusener "chocolate"), (rescatarse 3), beber (tomar_klusener "huevo")]}
-salidaDeAmigos = Itinerario{nombre_itinerario="Salida de amigos", duracion_estimada=1, acciones = [beber (tomar_soda 1), beber tomar_tintico, (agregar_amigo robertoCarlos), beber tomar_jarraLoca]}
+mezclaExplosiva = Itinerario{nombre_itinerario="Mezcla Explosiva",duracion_estimada= 2.5, acciones = [beber grogXd,beber grogXd, beber (klusener "huevo"), beber (klusener "frutilla")]}
+itinerarioBasico = Itinerario{nombre_itinerario="Basico",duracion_estimada= 5, acciones = [beber jarraLoca, beber (klusener "chocolate"), (rescatarse 3), beber (klusener "huevo")]}
+salidaDeAmigos = Itinerario{nombre_itinerario="Salida de amigos", duracion_estimada=1, acciones = [beber (soda 1), beber tintico, (agregar_amigo robertoCarlos), beber jarraLoca]}
+
+
+itinerarioAna = Itinerario{nombre_itinerario="Itinerario Ana",duracion_estimada= 1, acciones = [beber jarraLoca, beber (klusener "chocolate"), (rescatarse 2), beber (klusener "huevo")]}
 
 
 -------  OBJETIVO 4 ---------------
@@ -139,7 +146,7 @@ hacerItinerarioMasIntenso lista_itinerarios cliente = hacerItinerario (buscarMas
 
 {-
 itinerario:: TipoCliente->TipoCliente
-itinerario cliente = (tomar_klusener "huevo" (rescatarse 3 (tomar_klusener "chocolate" (tomar_jarraLoca cliente))))
+itinerario cliente = (klusener "huevo" (rescatarse 3 (klusener "chocolate" (jarraLoca cliente))))
 -}
 
 -------  OBJETIVO 5 ---------------
@@ -155,9 +162,9 @@ amigosDeAmigos 1 lamigos = foldl concatenar [] lamigos
 amigosDeAmigos n lamigos = (foldl concatenar [] lamigos)++(amigosDeAmigos (n-1) (foldl concatenar [] lamigos))
 
 
-tomar_jarra_popular:: Int -> TipoCliente -> TipoCliente
-tomar_jarra_popular 0 cliente = cliente
-tomar_jarra_popular n cliente = foldr agregar_amigo cliente (amigosDeAmigos n (amigos cliente))
+jarraPopular:: Int -> TipoCliente -> TipoCliente
+jarraPopular 0 cliente = cliente
+jarraPopular n cliente = foldr agregar_amigo cliente (amigosDeAmigos n (amigos cliente))
 
 
 -------- PRUEBAS ---------------
@@ -177,3 +184,11 @@ Cliente {nombre = "erpRoberto Carlos", resistencia = 170, amigos = [Cliente {nom
 
 
 -}
+-- Itinerarios de los ultimos test 
+
+itin_1= Itinerario{nombre_itinerario="Itin1",duracion_estimada= 1, acciones = [(agregar_amigo ana), beber(jarraPopular 0)]}
+itin_2= Itinerario{nombre_itinerario="Itin2",duracion_estimada= 1, acciones = [(agregar_amigo ana), beber(jarraPopular 3)]}
+
+
+
+
